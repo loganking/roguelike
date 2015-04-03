@@ -1,0 +1,7 @@
+This is an experiment in creating a js roguelike. Because it's intended to help me learn, I make no claims as to the quality of code.
+
+To do:
+ - separate code concerns into distinct files
+ - make a view camera to only show a portion of the level at one time
+ - add raytracing so that only "seen" paths are illuminated
+ - change renderer to use canvas instead of dom
