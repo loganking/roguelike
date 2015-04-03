@@ -67,16 +67,24 @@ define(['lodash/collection/shuffle'], function (shuffle){
 			row.forEach(function(cell, x){
 				var node = document.createElement("span"),
 					node_class = document.createAttribute("class"),
-					class_value = '';
+					class_value = '',
+					char = document.createElement("span");
+				node.innerHTML = '&nbsp;';
+				char.setAttribute('class', 'char')
 				if (cell & direction_values['N']) class_value = class_value + 'N';
 				if (cell & direction_values['S']) class_value = class_value + 'S';
 				if (cell & direction_values['E']) class_value = class_value + 'E';
 				if (cell & direction_values['W']) class_value = class_value + 'W';
-				if (player.y == y && player.x ==x) class_value = 'char'
 				node_class.value = class_value;
 				node.setAttributeNode(node_class);
-				node.innerHTML = '&nbsp;';
 				tr.appendChild(node);
+				if (player.y == y && player.x ==x) {
+					console.log(char);
+					console.log(x);
+					console.log(y);
+					char.innerHTML = '&nbsp;';
+					node.appendChild(char);
+				}
 			});
 			view.appendChild(tr);
 		});

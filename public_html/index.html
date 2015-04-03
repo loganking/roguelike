@@ -47,7 +47,7 @@
 			}
 
 			#maze div {margin-bottom:-8px;}
-			#maze span {display:inline-block; height:8px; width:8px; background:url("sprite.png") -24px -24px no-repeat; text-indent:-9999px;}
+			#maze span {display:inline-block; position:relative; height:8px; width:8px; background:url("sprite.png") -24px -24px no-repeat; text-indent:-9999px;}
 			#maze span.N    {background-position:00px 00px;}
 			#maze span.NS   {background-position:-8px 0px;}
 			#maze span.NE   {background-position:-16px 0px;}
@@ -64,7 +64,7 @@
 			#maze span.EW   {background-position:-8px -24px;}
 			#maze span.W    {background-position:-16px -24px;}
 			#maze span.W    {background-position:-16px -24px;}
-			#maze span.char {background-position:-24px -24px;}
+			#maze span.char {position:absolute; top:0; left:0; background-position:-24px -24px;}
 		</style>
 	</head>
 	<body>
