@@ -9,12 +9,16 @@ define(['lodash/collection/shuffle'], function (shuffle){
 			x: 0,
 			y: 0,
 			speed:1
-		}
+		},
+		exit = {x:0, y:0},
+		score = 0
 	view_id.value = "maze";
 	view.setAttributeNode(view_id);
 	// var seed = 
 
-	var init_grid = function(height, width, grid) {
+	var init_level = function(height, width, grid) {
+		exit.x = Math.floor(Math.random()*width);
+		exit.y = Math.floor(Math.random()*height);
 		var h = height;
 		while (h-- > 0) {
 			var w = width;
@@ -70,6 +74,7 @@ define(['lodash/collection/shuffle'], function (shuffle){
 					class_value = '',
 					char = document.createElement("span");
 				node.innerHTML = '&nbsp;';
+				char.innerHTML = '&nbsp;';
 				char.setAttribute('class', 'char')
 				if (cell & direction_values['N']) class_value = class_value + 'N';
 				if (cell & direction_values['S']) class_value = class_value + 'S';
@@ -78,11 +83,10 @@ define(['lodash/collection/shuffle'], function (shuffle){
 				node_class.value = class_value;
 				node.setAttributeNode(node_class);
 				tr.appendChild(node);
+				if (y==exit.y && x==exit.x) {
+					node.appendChild(char);
+				}
 				if (player.y == y && player.x ==x) {
-					console.log(char);
-					console.log(x);
-					console.log(y);
-					char.innerHTML = '&nbsp;';
 					node.appendChild(char);
 				}
 			});
@@ -120,16 +124,30 @@ define(['lodash/collection/shuffle'], function (shuffle){
 			if (key==39 && cell&direction_values['E']) { //right
 				player.x += player.speed
 			}
+			if (player.x==exit.x && player.y==exit.y) {
+				score ++;
+				console.log('score: '+score);
+				reset();
+			}
 		}
 		render(grid, view);
 	}
 
 	var main = function() {
-		init_grid(height, width, grid);
+		init_level(height, width, grid);
 		carve_passage_from(0,0,grid);
 		render(grid, view);
 		get_input(keysDown);
 	};
+
+	var reset = function() {
+		player.x = 0;
+		player.y = 0;
+		grid = [];
+		init_level(height, width, grid);
+		carve_passage_from(0,0,grid);
+		render(grid, view);
+	}
 
 	return main();
 });
