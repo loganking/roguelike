@@ -38,7 +38,7 @@ define(['renderer'], function (renderer){
 			if (props.player.x==props.exit.x && props.player.y==props.exit.y) {
 				props.score ++;
 				console.log('score: '+props.score);
-				reset();
+				props.reset();
 			}
 		}
 		renderer.render(props);

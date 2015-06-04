@@ -1,8 +1,7 @@
 define(['lodash/collection/shuffle'], function (shuffle){
 
 	var height = 40,
-		width = 40;
-	var direction_values = {'N':1, 'S':2, 'E':4, 'W':8},
+		width = 40,
 		DX = {'E':1, 'W':-1, 'N':0, 'S':0},
 		DY = {'E':0, 'W':0, 'N':-1, 'S':1},
 		opposite = {'E':'W', 'W':'E', 'N':'S', 'S':'N'};
@@ -19,11 +18,11 @@ define(['lodash/collection/shuffle'], function (shuffle){
 			}
 			props.grid.push(row);
 		}
-		_carve_passage_from(null, null, props.grid);
+		_carve_passage_from(null, null, props);
 		//world.fill_alleys(grid);
 	}
 
-	var _carve_passage_from = function(cx, cy, grid) {
+	var _carve_passage_from = function(cx, cy, props) {
 		// set initial state if not set
 		if (cx==null && cy==null) {
 			cx = height/2;
@@ -34,10 +33,10 @@ define(['lodash/collection/shuffle'], function (shuffle){
 		directions.forEach(function(direction){
 			var nx = cx + DX[direction],
 				ny = cy + DY[direction];
-			if ((ny >= 0 && ny <= width-1) && (nx >= 0 && nx <= height-1) && grid[ny][nx]==0) {
-				grid[cy][cx] |= direction_values[direction];
-				grid[ny][nx] |= direction_values[opposite[direction]];
-				_carve_passage_from(nx, ny, grid);
+			if ((ny >= 0 && ny <= width-1) && (nx >= 0 && nx <= height-1) && props.grid[ny][nx]==0) {
+				props.grid[cy][cx] |= props.direction_values[direction];
+				props.grid[ny][nx] |= props.direction_values[opposite[direction]];
+				_carve_passage_from(nx, ny, props);
 			}
 		});
 	}

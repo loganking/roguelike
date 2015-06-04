@@ -1,9 +1,13 @@
 define([], function (){
+	var view_id = document.createAttribute("id"),
+		view = document.createElement("div");
+	view_id.value = "maze";
+	view.setAttributeNode(view_id);
 
 	var render = function(props) {
 		// clear maze first
-		while (props.view.firstChild) {
-			props.view.removeChild(props.view.firstChild);
+		while (view.firstChild) {
+			view.removeChild(view.firstChild);
 		}
 		props.grid.forEach(function(row, y){
 			var tr = document.createElement("div");
@@ -29,9 +33,9 @@ define([], function (){
 					node.appendChild(char);
 				}
 			});
-			props.view.appendChild(tr);
+			view.appendChild(tr);
 		});
-		document.body.appendChild(props.view);
+		document.body.appendChild(view);
 	}
 	
 	return {
