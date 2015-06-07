@@ -95,9 +95,9 @@ define(['lodash/collection/shuffle'], function (shuffle){
 				if ((_exit.x==0 || _exit.x==width-1) ||
 					(_exit.y==0 || _exit.y==height-1) ||
 					(_exit.x==_room.x && _exit.y==_room.y) ||
-					(_exit.x==(_room.x+_room.width) && _exit.y==_room.y) ||
-					(_exit.x==_room.x && _exit.y==(_room.y+_room.height)) ||
-					(_exit.x==(_room.x+_room.width) && _exit.y==(_room.y+_room.height))
+					(_exit.x==(_room.x+_room.width-1) && _exit.y==_room.y) ||
+					(_exit.x==_room.x && _exit.y==(_room.y+_room.height-1)) ||
+					(_exit.x==(_room.x+_room.width-1) && _exit.y==(_room.y+_room.height-1))
 					) continue;
 				
 				_room.exits.push(_exit);
