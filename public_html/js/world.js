@@ -33,7 +33,7 @@ define(['lodash/collection/shuffle'], function (shuffle){
 		_generateRooms(props);
 		_generatePassages(props);
 		_connectRegions(props);
-		_fillAlleys();
+		_fillAlleys(props);
 		
 		// assign tile properties
 		// add necessary items to list for level (keys, etc)
@@ -153,7 +153,50 @@ define(['lodash/collection/shuffle'], function (shuffle){
 		}
 	}
 
-	var _fillAlleys = function() {
+	var _fillAlleys = function(props) {
+		var alleysToFill = .75 // percentage of alleys that should be filled
+		_alleys = [];
+		// loop over all cells checking for alleys
+		props.grid.forEach(function(row, y){
+			row.forEach(function(cell, x){
+				for (direction in props.direction_values) {
+					if (cell == props.direction_values[direction]) {
+						_alleys.push([x, y]);
+					}
+				}
+			});
+		});
+		console.log(_alleys);
+		
+		// recursively fill the alleys found, leaving percentage open
+		_alleys.forEach(function(alley) {
+			if (Math.random() < alleysToFill) {
+				_fillAlley(props, alley);
+			}
+		});
+	}
+
+	_fillAlley = function(props, cell) {
+		var x = cell[0],
+			y = cell[1];
+		var _alleyDirection,
+			_newCell,
+			ny,
+			nx;
+		for (direction in props.direction_values) {
+			if (props.grid[y][x] == props.direction_values[direction]) _alleyDirection = direction;
+		}
+		props.grid[y][x] = 0;
+		ny = y+DY[_alleyDirection];
+		nx = x+DX[_alleyDirection];
+		props.grid[ny][nx] ^= props.direction_values[opposite[_alleyDirection]];
+		_newCell = props.grid[ny][nx];
+		console.log(_newCell);
+		for (direction in props.direction_values) {
+			if (_newCell == props.direction_values[direction]) {
+				_fillAlley(props, [nx, ny]);
+			}
+		}
 	}
 
 	var _isRoomOverlapping = function(room, other) {
