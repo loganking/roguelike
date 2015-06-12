@@ -2,6 +2,13 @@ define(['lodash/collection/shuffle'], function (shuffle){
 
 	var height = 40,
 		width = 40,
+		// @todo adjust sparesness equations so that value is accurate percentage (logarithmic functions?)
+		sparseness = .09, // measure of room density
+		minRoomWidth = 3,
+		maxRoomWidth = 9,
+		// @todo implement room bias
+		roomBias = .5, // 0-1 measure of horizontal/vertical bias
+		alleysToFill = .75, // percentage of alleys that should be filled
 		DX = {'E':1, 'W':-1, 'N':0, 'S':0},
 		DY = {'E':0, 'W':0, 'N':-1, 'S':1},
 		opposite = {'E':'W', 'W':'E', 'N':'S', 'S':'N'},
@@ -10,11 +17,21 @@ define(['lodash/collection/shuffle'], function (shuffle){
 	//@todo rooms will need to be higher property and passed alongside world grid
 
 	var init = function(props) {
+		// set tunable vars
+
+
 		props.exit.x = Math.floor(Math.random()*width);
 		props.exit.y = Math.floor(Math.random()*height);
 		_initGrid(props.grid);
-		_generateLevel(props);
-		//world.fill_alleys(grid);
+		_generateRooms(props);
+		_generatePassages(props);
+		_connectRegions(props);
+		_fillAlleys(props);
+		_generatePlayerStart(props);
+		_generatePlayerExit(props);
+		
+		// assign tile properties
+		// add necessary items to list for level (keys, etc)
 	}
 
 	var _initGrid = function(grid) {
@@ -29,26 +46,7 @@ define(['lodash/collection/shuffle'], function (shuffle){
 		}
 	}
 
-	var _generateLevel = function(props) {
-		_generateRooms(props);
-		_generatePassages(props);
-		_connectRegions(props);
-		_fillAlleys(props);
-		_generatePlayerStart(props);
-		
-		// assign tile properties
-		// add necessary items to list for level (keys, etc)
-	}
-
 	var _generateRooms = function(props) {
-		// set tunable vars
-		// @todo adjust sparesness equations so that value is accurate percentage (logrythmic functions?)
-		var sparseness = .09; // measure of density
-		var minRoomWidth = 3;
-		var maxRoomWidth = 9;
-		// @todo implement room bias
-		var roomBias = .5; // 0-1 measure of horizontal/vertical bias
-		
 		var _tries = height*width*sparseness;
 		
 		// try placing rooms up to number of _tries
@@ -174,7 +172,8 @@ define(['lodash/collection/shuffle'], function (shuffle){
 				props.grid[ny][nx] |= props.direction_values[opposite[direction]];
 				
 				// chance to extend passage
-				if (Math.random()<.5) {
+				// @todo should this be tunable?
+				if (Math.random()<.75) {
 					var nnx = nx + DX[direction],
 						nny = ny + DY[direction];
 					if (_isValidPassage(nnx, nny, props.grid)) {
@@ -203,7 +202,6 @@ define(['lodash/collection/shuffle'], function (shuffle){
 	}
 
 	var _fillAlleys = function(props) {
-		var alleysToFill = .75 // percentage of alleys that should be filled
 		_alleys = [];
 		// loop over all cells checking for alleys
 		props.grid.forEach(function(row, y){
@@ -247,9 +245,40 @@ define(['lodash/collection/shuffle'], function (shuffle){
 	}
 
 	var _generatePlayerStart = function(props) {
-		while (props.grid[props.player.y][props.player.x] == 0) {
-			props.player.x++;
+		var _rooms = shuffle(rooms),
+			_room = _rooms.shift();
+		props.player.x = Math.floor(Math.random()*_room.width)+_room.x;
+		props.player.y = Math.floor(Math.random()*_room.height)+_room.y;
+	}
+
+	var _generatePlayerExit = function(props) {
+		var _rooms = shuffle(rooms),
+			_room = _rooms.shift(),
+			_distance = Math.sqrt((height*height)+(width*width))/2;
+		props.exit.x = Math.floor(Math.random()*_room.width)+_room.x;
+		props.exit.y = Math.floor(Math.random()*_room.height)+_room.y;
+		while (_calculateDistance(props.player, props.exit) < _distance) {
+			_room = _rooms.shift();
+			props.exit.x = Math.floor(Math.random()*_room.width)+_room.x;
+			props.exit.y = Math.floor(Math.random()*_room.height)+_room.y;
 		}
+		// @todo it's possible that an exit won't be generated because the distance from the start won't be far enough...
+	}
+
+	var _calculateDistance = function(a, b) {
+		var _h,
+			_w;
+		if (a.x > b.x) {
+			_w = a.x-b.x;
+		} else {
+			_w = b.x-a.x;
+		}
+		if (a.y > b.y) {
+			_h = a.y-b.y;
+		} else {
+			_h = b.y-a.y;
+		}
+		return Math.sqrt((_w*_w)+(_h*_h));
 	}
 
 	return {
